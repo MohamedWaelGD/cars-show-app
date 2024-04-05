@@ -7,6 +7,8 @@ export class World {
     camera!: THREE.Camera;
     orbitCamera!: OrbitControls;
 
+    backgroundColor: number | string = `rgb(${30}, ${30}, ${30})`;
+
     constructor() {
         this.setupWorld()
     }
@@ -17,12 +19,20 @@ export class World {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
         this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(this.backgroundColor);
 
-
+        this.setupFog();
         this.setupCamera();
         this.setupGround();
         this.setupSceneLights();
         this.animate();
+    }
+
+    private setupFog() {
+        const near = 4;
+        const far = 30;
+        const color = new THREE.Color(this.backgroundColor);
+        this.scene.fog = new THREE.Fog(color, near, far);
     }
 
     private setupCamera() {
@@ -35,12 +45,17 @@ export class World {
         this.camera.position.set(5, 5, 6);
         this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         this.orbitCamera = new OrbitControls(this.camera, this.renderer.domElement);
+        this.orbitCamera.enableDamping = true;
+        this.orbitCamera.dampingFactor = 0.25;
+        this.orbitCamera.minDistance = 5;
+        this.orbitCamera.maxDistance = 7;
+        this.orbitCamera.maxPolarAngle = (Math.PI / 2) - 0.1;
         this.orbitCamera.update();
     }
 
     private setupGround() {
         const planeMesh = new THREE.Mesh(
-            new THREE.PlaneGeometry(10, 10),
+            new THREE.PlaneGeometry(100, 100),
             new THREE.MeshStandardMaterial({
                 color: "rgb(100, 100, 100)",
                 side: THREE.DoubleSide,
@@ -52,7 +67,7 @@ export class World {
     }
 
     private setupSceneLights() {
-        const ambientLight = new THREE.AmbientLight(0xffffff, 2);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 3);
         this.scene.add(ambientLight);
 
         const directionalLight = new THREE.DirectionalLight(

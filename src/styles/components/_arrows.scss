@@ -1,0 +1,39 @@
+$awayFromScreen: 30px;
+
+.arrows-wrapper {
+    button {
+        position: absolute;
+        top: 50%;
+        width: 70px;
+        height: 70px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: translateY(-50%);
+        background: none;
+        border: 1px solid $light;
+        color: $light;
+        transition: background-color 200ms, color 200ms;
+
+        i {
+            font-size: 2.5rem;
+        }
+
+        &:hover {
+            background-color: $light;
+            color: $dark;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+        }
+    }
+
+    .left {
+        left: $awayFromScreen;
+    }
+
+    .right {
+        right: $awayFromScreen;
+    }
+}

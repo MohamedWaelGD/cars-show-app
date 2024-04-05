@@ -1,0 +1,36 @@
+.models-selection {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+
+    ul {
+        list-style: none;
+        font-size: 1.2rem;
+        color: white;
+
+        li, button {
+            background-color: rgba($color: #fff, $alpha: 0);
+            width: 100%;
+            background: none;
+            border: none;
+            outline: none;
+            text-align: left;
+            transition: background-color 100ms;
+            padding: 0;
+            color: white;
+            font-weight: bold;
+        }
+        
+        li {
+            padding: 0.4rem 0.3rem;
+        }
+
+        li:has(button:hover) {
+            background-color: rgba($color: #fff, $alpha: 0.2);
+        }
+        
+        .model-banner {
+            background-color: $reddish;
+        }
+    }
+}
