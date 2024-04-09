@@ -6,26 +6,9 @@ $awayFromScreen: 30px;
         top: 50%;
         width: 70px;
         height: 70px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transform: translateY(-50%);
-        background: none;
-        border: 1px solid $light;
-        color: $light;
-        transition: background-color 200ms, color 200ms;
 
         i {
             font-size: 2.5rem;
-        }
-
-        &:hover {
-            background-color: $light;
-            color: $dark;
-        }
-
-        &:disabled {
-            opacity: 0.5;
         }
     }
 
@@ -36,4 +19,12 @@ $awayFromScreen: 30px;
     .right {
         right: $awayFromScreen;
     }
+}
+
+.middle-select {
+    top: unset !important;
+    bottom: 10%;
+    transform: translate(-50%);
+    left: 50%;
+    padding: 30px 100px;
 }

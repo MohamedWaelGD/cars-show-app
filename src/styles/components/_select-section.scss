@@ -1,0 +1,22 @@
+.select-section {
+    position: absolute;
+    bottom: 10%;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    #orbit-control {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+
+    #done-control {
+        height: 50px;
+        width: 100px;
+        background-color: rgb(70, 197, 53);
+        font-weight: bold;
+        color: white;
+    }
+}

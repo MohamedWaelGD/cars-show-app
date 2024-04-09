@@ -7,16 +7,28 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Cars Show App</title>
   </head>
-  <body>
+  <body class="overflow-hidden">
     <div>
       <div class="models-selection">
         <ul id="models-names">
           <li class="model-banner">Models</li>
         </ul>
       </div>
+      <div class="colors-section d-none"></div>
       <div class="arrows-wrapper">
-        <button class="left" id="left-car-switch"><i class="fa-solid fa-angle-left"></i></button>
-        <button class="right" id="right-car-switch"><i class="fa-solid fa-angle-right"></i></button>
+        <button class="outline-btn left" id="left-car-switch"><i class="fa-solid fa-angle-left"></i></button>
+        <button class="outline-btn middle-select">Select</button>
+        <button class="outline-btn right" id="right-car-switch"><i class="fa-solid fa-angle-right"></i></button>
+      </div>
+      <div class="select-section d-none">
+        <button class="outline-btn" id="orbit-control"><i class="fa-solid fa-arrows-to-eye"></i></button>
+        <button class="outline-btn" id="done-control">Done</button>
+      </div>
+      <div id="drag-note">
+        <div class="d-flex flex-column justify-content-center align-items-center">
+          <i class="fa-solid fa-computer-mouse"></i> 
+          <p>Drag on screen to rotate around</p>
+        </div>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>

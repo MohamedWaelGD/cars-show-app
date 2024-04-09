@@ -1,0 +1,29 @@
+#drag-note {
+    display: none;
+    position: absolute;
+    pointer-events: none;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    color: white;
+    font-weight: bold;
+
+    i {
+        animation: auto-animate-mouse 1.5s infinite;
+    }
+
+    @keyframes auto-animate-mouse {
+        0% {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        50% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+    }
+}

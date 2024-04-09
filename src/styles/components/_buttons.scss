@@ -1,0 +1,24 @@
+.outline-btn {
+    border: 1px solid white;
+    background: none;
+    outline: none;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 200ms, color 200ms, scale 200ms;
+
+    &:hover {
+        background-color: white;
+        color: black;
+        scale: 1.1;
+    }
+
+    &:active {
+        scale: 0.9;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+    }
+}
