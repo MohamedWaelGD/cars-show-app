@@ -1,6 +1,12 @@
 import gsap from "gsap";
 import * as THREE from "three";
-import { FlakesTexture, OrbitControls } from "three/examples/jsm/Addons.js";
+import {
+    EffectComposer,
+    OrbitControls,
+    OutputPass,
+    RenderPass,
+    UnrealBloomPass,
+} from "three/examples/jsm/Addons.js";
 
 const orbitBtn = document.querySelector("#orbit-control") as HTMLButtonElement;
 const dragNoteEle = document.querySelector("#drag-note") as HTMLElement;
@@ -13,6 +19,8 @@ export class World {
     orbitCamera!: OrbitControls;
     targetCamera = new THREE.Vector3(0, 0, 0);
     gsapAction!: gsap.core.Tween;
+    renderScene!: RenderPass;
+    composer!: EffectComposer;
 
     backgroundColor: number | string = `rgb(${30}, ${30}, ${30})`;
 
@@ -30,18 +38,9 @@ export class World {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(this.backgroundColor);
 
-        this.setupFog();
         this.setupCamera();
-        this.setupGround();
-        this.setupSceneLights();
+        this.setupPostProcessing();
         this.animate();
-    }
-
-    private setupFog() {
-        const near = 4;
-        const far = 30;
-        const color = new THREE.Color(this.backgroundColor);
-        this.scene.fog = new THREE.Fog(color, near, far);
     }
 
     private setupCamera() {
@@ -51,7 +50,7 @@ export class World {
             0.1,
             1000
         );
-        this.camera.position.set(7, 5, 7);
+        this.camera.position.set(7, 5, 0);
         this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         this.orbitCamera = new OrbitControls(
             this.camera,
@@ -63,44 +62,45 @@ export class World {
         this.orbitCamera.enabled = false;
     }
 
-    private setupGround() {
-        const planeMesh = new THREE.Mesh(
-            new THREE.PlaneGeometry(100, 100),
-            new THREE.MeshStandardMaterial({
-                color: "rgb(100, 100, 100)",
-                side: THREE.DoubleSide,
-            })
-        );
-        planeMesh.receiveShadow = true;
-        planeMesh.rotation.x = Math.PI / 2;
-        this.scene.add(planeMesh);
-    }
+    private setupPostProcessing() {
+        this.renderScene = new RenderPass(this.scene, this.camera);
+        this.composer = new EffectComposer(this.renderer);
+        this.composer.addPass(this.renderScene);
 
-    private setupSceneLights() {
-        const ambientLight = new THREE.AmbientLight(0xffffff, 3);
-        this.scene.add(ambientLight);
-        const light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 10 );
-        this.scene.add( light );
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            0.2,
+            0.5,
+            0.5
+        );
+        this.composer.addPass(bloomPass);
+
+        const outputPass = new OutputPass();
+        this.composer.addPass(outputPass);
     }
 
     private animate() {
         this.orbitCamera.update();
         this.renderer.render(this.scene, this.camera);
+        this.composer.render();
         requestAnimationFrame(() => this.animate());
     }
 
     private setupOrbitButton() {
         orbitBtn.addEventListener("click", () => {
-            this.orbitCamera.enabled = !this.orbitCamera.enabled;
-
-            if (this.orbitCamera.enabled) {
-                dragNoteEle.style.display = "block";
-                bodyEle.style.cursor = "move";
-            } else {
-                dragNoteEle.style.display = "none";
-                bodyEle.style.cursor = "default";
-            }
+            this.setOrbitControlActive(!this.orbitCamera.enabled);
         });
+    }
+
+    setOrbitControlActive(value: boolean) {
+        this.orbitCamera.enabled = value;
+        if (value) {
+            dragNoteEle.style.display = "block";
+            bodyEle.style.cursor = "move";
+        } else {
+            dragNoteEle.style.display = "none";
+            bodyEle.style.cursor = "default";
+        }
     }
 
     focusCamera(lookPoint: THREE.Vector3) {

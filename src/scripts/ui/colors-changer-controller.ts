@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import { Car } from "../car";
+import { CarController } from "../car";
 
 const colorsWrapper = document.querySelector(`.colors-section`) as HTMLElement;
 
@@ -12,12 +12,12 @@ export class ColorsChangerController {
         "rgb(0, 200, 0)",
     ];
 
-    constructor(private _selectedCar: Car | null) {
+    constructor(private _selectedCar: CarController | null) {
         this.init();
         this.setColorsSectionVisibility(false);
     }
 
-    set setSelectedCar(car: Car | null) {
+    set selectedCar(car: CarController | null) {
         this._selectedCar = car;
     }
 

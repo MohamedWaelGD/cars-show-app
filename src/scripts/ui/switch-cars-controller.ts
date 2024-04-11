@@ -1,7 +1,7 @@
 import { Vector3 } from "three";
 import { EventDispatcher, Handler } from "../utilities/event-handler";
-import { Car } from "../car";
 import gsap from "gsap";
+import { IScene } from "../scenes/scene";
 
 const leftArrowBtn = document.querySelector(
     `#left-car-switch`
@@ -9,116 +9,34 @@ const leftArrowBtn = document.querySelector(
 const rightArrowBtn = document.querySelector(
     `#right-car-switch`
 ) as HTMLButtonElement;
-const selectBtn = document.querySelector(`.middle-select`) as HTMLButtonElement;
-const unSelectBtn = document.querySelector(
-    `#done-control`
-) as HTMLButtonElement;
 const modelsCarsSection = document.querySelector(
     "#models-names"
-) as HTMLElement;
-const selectCarOptionsSection = document.querySelector(
-    `.select-section`
 ) as HTMLElement;
 
 export class SwitchCarsController {
     private _currentIndex: number = 0;
-    private _selectedIndex: number | undefined = 0;
-    private _onSelectCar = new EventDispatcher<Car | null>();
-    private _onViewCar = new EventDispatcher<Car>();
+    private _onSelectIndex = new EventDispatcher<SwitchIndex>();
 
-    constructor(private _cars: Car[]) {
-        this.setupSelectButton();
-        this.setupUnSelectButton();
+    constructor(private _scenes: IScene[]) {
         this.setupNamesForModels();
         this.setupArrows();
         this.checkButtonsStatusActive();
     }
 
-    get viewedCar() {
-        return this._cars[this._currentIndex];
+    get currentIndex() {
+        return this._currentIndex;
     }
 
-    get selectedCar() {
-        if (!this._selectedIndex) return null;
-
-        return this._cars[this._selectedIndex];
-    }
-
-    public onViewCar(e: Handler<Car>) {
-        this._onViewCar.subscribe(e);
-    }
-
-    public onSelectCar(e: Handler<Car | null>) {
-        this._onSelectCar.subscribe(e);
-    }
-
-    private setupSelectButton() {
-        selectBtn.addEventListener("click", () => {
-            this._selectedIndex = this._currentIndex;
-            this._onSelectCar.next(this._cars[this._currentIndex]);
-            gsap.to(leftArrowBtn, {
-                x: -500,
-                duration: 2,
-            });
-            gsap.to(rightArrowBtn, {
-                x: 500,
-                duration: 2,
-            });
-            gsap.to(selectBtn, {
-                y: 500,
-                duration: 2,
-            });
-            gsap.to(modelsCarsSection, {
-                y: -200,
-                duration: 1
-            })
-            selectCarOptionsSection.classList.remove('d-none');
-            gsap.fromTo(
-                selectCarOptionsSection,
-                {
-                    y: 500,
-                    duration: 3,
-                },
-                {
-                    y: 0,
-                }
-            );
-        });
-    }
-
-    private setupUnSelectButton() {
-        unSelectBtn.addEventListener("click", () => {
-            gsap.to(leftArrowBtn, {
-                x: 0,
-                duration: 2,
-            });
-            gsap.to(rightArrowBtn, {
-                x: 0,
-                duration: 2,
-            });
-            gsap.to(selectBtn, {
-                y: 0,
-                duration: 2,
-            });
-            gsap.to(selectCarOptionsSection, {
-                y: 500,
-                duration: 2,
-            });
-            gsap.to(modelsCarsSection, {
-                y: 0,
-                duration: 1
-            })
-            this._selectedIndex = undefined;
-            this._onSelectCar.next(null);
-        });
+    public onSelect(e: Handler<SwitchIndex>) {
+        this._onSelectIndex.subscribe(e);
     }
 
     private setupNamesForModels() {
-        for (let i = 0; i < this._cars.length; i++) {
-            const car = this._cars[i];
+        for (let i = 0; i < this._scenes.length; i++) {
+            const scene = this._scenes[i];
             const carLiEle = document.createElement("li");
             const carButtonEle = document.createElement("button");
-            carButtonEle.innerHTML = car.carDetails.name;
+            carButtonEle.innerHTML = scene.carDetails.name;
             carButtonEle.addEventListener("click", () => {
                 this.selectCarIndex(i);
             });
@@ -139,36 +57,50 @@ export class SwitchCarsController {
     private selectCarIndex(index: number) {
         if (
             index < 0 ||
-            index >= this._cars.length ||
+            index >= this._scenes.length ||
             this._currentIndex === index
         )
             return;
 
+        this._onSelectIndex.next({
+            prev: this._currentIndex,
+            current: index,
+        });
         this._currentIndex = index;
-        this._onViewCar.next(this._cars[this._currentIndex]);
         this.checkButtonsStatusActive();
     }
 
     private prevCar() {
         if (this._currentIndex - 1 < 0) return;
 
+        this._onSelectIndex.next({
+            prev: this._currentIndex,
+            current: this._currentIndex - 1,
+        });
         this._currentIndex -= 1;
-        this._onViewCar.next(this._cars[this._currentIndex]);
         this.checkButtonsStatusActive();
     }
 
     private nextCar() {
-        if (this._currentIndex + 1 >= this._cars.length) return;
+        if (this._currentIndex + 1 >= this._scenes.length) return;
+        this._onSelectIndex.next({
+            prev: this._currentIndex,
+            current: this._currentIndex + 1,
+        });
         this._currentIndex += 1;
-        this._onViewCar.next(this._cars[this._currentIndex]);
         this.checkButtonsStatusActive();
     }
 
     private checkButtonsStatusActive() {
         if (this._currentIndex === 0) leftArrowBtn.disabled = true;
         else leftArrowBtn.disabled = false;
-        if (this._currentIndex === this._cars.length - 1)
+        if (this._currentIndex === this._scenes.length - 1)
             rightArrowBtn.disabled = true;
         else rightArrowBtn.disabled = false;
     }
+}
+
+export interface SwitchIndex {
+    prev: number;
+    current: number;
 }

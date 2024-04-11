@@ -1,19 +1,20 @@
-import { GLTFLoader, TransformControls } from "three/examples/jsm/Addons.js";
+import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import * as THREE from "three";
 import gsap from "gsap";
+import { World } from "./world";
 
-export class Car {
+export class CarController {
     private _model!: THREE.Group<THREE.Object3DEventMap>;
     private _spotlights: THREE.SpotLight[] = [];
     private _partsNames: string[] = [];
 
     constructor(
         private _carDetail: CarDetails,
-        private _scene: THREE.Scene,
-        private _camera: THREE.Camera,
-        private _renderer: THREE.WebGLRenderer,
+        private _world: World,
         private _position: THREE.Vector3 = new THREE.Vector3(0, 0, 0)
-    ) {}
+    ) {
+        this.partColorName = _carDetail.partColors;
+    }
 
     get model() {
         return this._model;
@@ -29,11 +30,11 @@ export class Car {
 
     async loadCar() {
         if (this._model) {
-            this._scene.remove(this._model);
+            this._world.scene.remove(this._model);
         }
         if (this._spotlights && this._spotlights.length > 0) {
             this._spotlights.forEach((spotLight) =>
-                this._scene.remove(spotLight)
+                this._world.scene.remove(spotLight)
             );
         }
 
@@ -48,17 +49,11 @@ export class Car {
         this._model.traverse((child) => {
             child.castShadow = true;
         });
-        this._scene.add(this._model);
+        this._world.scene.add(this._model);
+    }
 
-        const light = new THREE.PointLight(
-            "rgb(255, 255, 255)",
-            50,
-            100,
-            1
-        );
-        light.castShadow = true;
-        light.position.set(this._position.x + 0, this._position.y + 4, this._position.z + 0);
-        this._scene.add(light)
+    destroyCar() {
+        this._world.scene.remove(this._model);
     }
 
     addHeadlights(
@@ -103,6 +98,7 @@ export class Car {
             if (child instanceof THREE.Mesh && this._partsNames.includes(child.name)) {
                 let mat = child.material as THREE.MeshStandardMaterial;
                 mat.color = new THREE.Color(color);
+                mat.emissive
                 child.material = mat;
             }
         });
