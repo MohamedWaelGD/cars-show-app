@@ -62,7 +62,7 @@ const colorsChangerController = new ColorsChangerController(
     scenes[switchCarsController.currentIndex].getCar()
 );
 
-await initScene();
+initScene();
 checkUiAnimation();
 
 selectBtn.addEventListener("click", () => {
