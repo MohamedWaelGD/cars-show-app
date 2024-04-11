@@ -1,10 +1,7 @@
 import "./style.scss";
-import { Euler, Vector3 } from "three";
-import { CarController, CarDetails } from "./scripts/car";
 import { World } from "./scripts/world";
 import { SwitchCarsController } from "./scripts/ui/switch-cars-controller";
 import { ColorsChangerController } from "./scripts/ui/colors-changer-controller";
-import { calculatePointsOnCircle } from "./scripts/utilities/circle";
 import { HorrorScene } from "./scripts/scenes/horror-scene";
 import { IScene } from "./scripts/scenes/scene";
 import { ScifiScene } from "./scripts/scenes/scifi-scene";

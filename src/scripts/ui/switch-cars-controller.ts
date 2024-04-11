@@ -1,6 +1,4 @@
-import { Vector3 } from "three";
 import { EventDispatcher, Handler } from "../utilities/event-handler";
-import gsap from "gsap";
 import { IScene } from "../scenes/scene";
 
 const leftArrowBtn = document.querySelector(
