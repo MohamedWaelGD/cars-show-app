@@ -1,5 +1,5 @@
 import { EventDispatcher, Handler } from "../utilities/event-handler";
-import { IScene } from "../scenes/scene";
+import { CarDetails } from "../car";
 
 const leftArrowBtn = document.querySelector(
     `#left-car-switch`
@@ -15,7 +15,7 @@ export class SwitchCarsController {
     private _currentIndex: number = 0;
     private _onSelectIndex = new EventDispatcher<SwitchIndex>();
 
-    constructor(private _scenes: IScene[]) {
+    constructor(private _cars: CarDetails[]) {
         this.setupNamesForModels();
         this.setupArrows();
         this.checkButtonsStatusActive();
@@ -30,11 +30,11 @@ export class SwitchCarsController {
     }
 
     private setupNamesForModels() {
-        for (let i = 0; i < this._scenes.length; i++) {
-            const scene = this._scenes[i];
+        for (let i = 0; i < this._cars.length; i++) {
+            const carDetail = this._cars[i];
             const carLiEle = document.createElement("li");
             const carButtonEle = document.createElement("button");
-            carButtonEle.innerHTML = scene.carDetails.name;
+            carButtonEle.innerHTML = carDetail.name;
             carButtonEle.addEventListener("click", () => {
                 this.selectCarIndex(i);
             });
@@ -55,7 +55,7 @@ export class SwitchCarsController {
     private selectCarIndex(index: number) {
         if (
             index < 0 ||
-            index >= this._scenes.length ||
+            index >= this._cars.length ||
             this._currentIndex === index
         )
             return;
@@ -80,7 +80,7 @@ export class SwitchCarsController {
     }
 
     private nextCar() {
-        if (this._currentIndex + 1 >= this._scenes.length) return;
+        if (this._currentIndex + 1 >= this._cars.length) return;
         this._onSelectIndex.next({
             prev: this._currentIndex,
             current: this._currentIndex + 1,
@@ -92,7 +92,7 @@ export class SwitchCarsController {
     private checkButtonsStatusActive() {
         if (this._currentIndex === 0) leftArrowBtn.disabled = true;
         else leftArrowBtn.disabled = false;
-        if (this._currentIndex === this._scenes.length - 1)
+        if (this._currentIndex === this._cars.length - 1)
             rightArrowBtn.disabled = true;
         else rightArrowBtn.disabled = false;
     }

@@ -28,7 +28,7 @@ export class CarController {
         this._partsNames = [...newNames];
     }
 
-    async loadCar() {
+    async loadCar(onLoad: Function | null = null) {
         if (this._model) {
             this._world.scene.remove(this._model);
         }
@@ -50,6 +50,9 @@ export class CarController {
             child.castShadow = true;
         });
         this._world.scene.add(this._model);
+        if (onLoad) {
+            onLoad();
+        }
     }
 
     destroyCar() {
@@ -97,9 +100,17 @@ export class CarController {
         this._model.traverse((child) => {
             if (child instanceof THREE.Mesh && this._partsNames.includes(child.name)) {
                 let mat = child.material as THREE.MeshStandardMaterial;
-                mat.color = new THREE.Color(color);
-                mat.emissive
-                child.material = mat;
+                let newColor = new THREE.Color(color);
+                let oldColor = new THREE.Color(mat.color);
+                gsap.to(oldColor, {
+                    r: newColor.r,
+                    g: newColor.g,
+                    b: newColor.b,
+                    onUpdate: () => {
+                        mat.color = new THREE.Color(oldColor);
+                        child.material = mat;
+                    }
+                });
             }
         });
     }

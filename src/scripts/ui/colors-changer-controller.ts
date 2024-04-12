@@ -1,24 +1,36 @@
 import gsap from "gsap";
-import { CarController } from "../car";
+import { EventDispatcher, Handler } from "../utilities/event-handler";
 
 const colorsWrapper = document.querySelector(`.colors-section`) as HTMLElement;
 
 export class ColorsChangerController {
     readonly mainColors = [
-        "rgb(30, 30, 30)",
-        "rgb(200, 200, 200)",
-        "rgb(200, 0, 0)",
-        "rgb(200, 200, 0)",
-        "rgb(0, 200, 0)",
+        "rgb(0, 0, 0)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 255, 0)",
+        "rgb(0, 255, 0)",
     ];
 
-    constructor(private _selectedCar: CarController | null) {
+    private _onChangeColor = new EventDispatcher<string>();
+    private _onChangeTexture = new EventDispatcher<string | ArrayBuffer | null>();
+    private _selectedColor: string = this.mainColors[0];
+
+    constructor() {
         this.init();
         this.setColorsSectionVisibility(false);
     }
 
-    set selectedCar(car: CarController | null) {
-        this._selectedCar = car;
+    get selectedColor() {
+        return this._selectedColor;
+    }
+
+    public onSelectColor(e: Handler<string>) {
+        this._onChangeColor.subscribe(e);
+    }
+
+    public onSelectTexture(e: Handler<string | ArrayBuffer | null>) {
+        this._onChangeTexture.subscribe(e);
     }
 
     private init() {
@@ -105,18 +117,17 @@ export class ColorsChangerController {
         const reader = new FileReader();
 
         reader.onload = (event) => {
-            if (!this._selectedCar) return;
+            if (!event.target) return;
 
-            this._selectedCar.setColorTexture(event.target?.result);
+            this._onChangeTexture.next(event.target?.result);
         };
 
         reader.readAsDataURL(file);
     }
 
     private colorCar(color: string) {
-        if (!this._selectedCar) return;
-
-        this._selectedCar.setColorCar(color);
+        this._onChangeColor.next(color);
+        this._selectedColor = color;
     }
 
     setColorsSectionVisibility(show: boolean) {
