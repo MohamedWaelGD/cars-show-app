@@ -2,7 +2,6 @@ import gsap from "gsap";
 import * as THREE from "three";
 import {
     EffectComposer,
-    GTAOPass,
     OrbitControls,
     OutputPass,
     RenderPass,
